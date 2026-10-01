@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Market Book Connector</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header class="app-header">
+  <div class="header-row">
+    <h1 class="brand">
+      <svg class="brand-mark" viewBox="0 0 72 56" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="bm-edge" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#5fe3ff" />
+            <stop offset="0.55" stop-color="#7d95ff" />
+            <stop offset="1" stop-color="#c08cff" />
+          </linearGradient>
+          <radialGradient id="bm-core" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color="#ffe3a3" />
+            <stop offset="1" stop-color="#f0bd62" />
+          </radialGradient>
+          <filter id="bm-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="1.6" result="b" />
+            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+        <!-- hexagonal housing -->
+        <path class="bm-hex" d="M28 3 L50 15.5 V40.5 L28 53 L6 40.5 V15.5 Z" />
+        <path class="bm-hex-inner" d="M28 9 L44.8 18.7 V37.3 L28 47 L11.2 37.3 V18.7 Z" />
+        <!-- open book: two pages meeting at a spine -->
+        <path class="bm-page" d="M28 20 C23 17 18 17 14.5 18.5 V36 C18 34.5 23 34.5 28 37.5" />
+        <path class="bm-page" d="M28 20 C33 17 38 17 41.5 18.5 V36 C38 34.5 33 34.5 28 37.5" />
+        <!-- research records on the left page, linked to the matched state on the right -->
+        <g class="bm-links">
+          <path d="M19 23.5 L28 28.5 L36.5 25" />
+          <path d="M19 28.5 L28 28.5" />
+          <path d="M19 33 L28 28.5" />
+        </g>
+        <g class="bm-nodes">
+          <circle cx="19" cy="23.5" r="1.7" />
+          <circle cx="19" cy="28.5" r="1.7" />
+          <circle cx="19" cy="33" r="1.7" />
+        </g>
+        <circle class="bm-core" cx="28" cy="28.5" r="2.6" />
+        <circle class="bm-target" cx="36.5" cy="25" r="2.2" />
+        <!-- connector trace out to the name plate -->
+        <path class="bm-trace" d="M50 28 H60 L64 24 H72" />
+        <path class="bm-pulse" d="M50 28 H60 L64 24 H72" />
+        <circle class="bm-port" cx="50" cy="28" r="1.8" />
+      </svg>
+      <span class="brand-plate">
+        <svg class="brand-frame" viewBox="0 0 300 44" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="bf-edge" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#5fe3ff" />
+              <stop offset="0.5" stop-color="#7d95ff" />
+              <stop offset="1" stop-color="#c08cff" stop-opacity="0.35" />
+            </linearGradient>
+          </defs>
+          <path class="bf-fill" d="M0 20 L12 2 H300 V32 L288 42 H0 Z" />
+          <path class="bf-line" d="M0 20 L12 2 H300 V32 L288 42 H0 Z" />
+        </svg>
+        <span class="brand-name">Market Book <span class="brand-accent">Connector</span></span>
+      </span>
+    </h1>
+    <button id="guide-toggle" type="button" class="guide-toggle"
+      aria-expanded="false" aria-controls="guide" title="Open the Guide (shortcut: ?)">? Guide</button>
+  </div>
+  <p class="purpose">Maps market commentary to research-backed market states, with evidence and limits.</p>
+  <p id="banner" class="banner">Research context for analyst review — not a trading instruction.</p>
+</header>
+
+<div id="layout" class="layout">
+<main id="main">
+  <!-- Input / launch panel: two explicit modes -->
+  <section id="panel-input-capture" class="panel panel-input">
+    <h2 class="panel-title"><span class="panel-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7" /></svg></span>
+      <span class="panel-step">1</span> Choose a run</h2>
+    <div class="mode-head">
+      <div class="mode-tabs" role="tablist" aria-label="What do you want to do?">
+        <button type="button" role="tab" id="tab-explore" class="mode-tab"
+          aria-selected="true" aria-controls="mode-explore">Explore saved results</button>
+        <button type="button" role="tab" id="tab-evaluate" class="mode-tab"
+          aria-selected="false" aria-controls="mode-evaluate" tabindex="-1">Evaluate my commentary</button>
+      </div>
+      <button type="button" class="info-btn" data-guide="modes" aria-label="About exploring and evaluating">ⓘ</button>
+    </div>
+
+    <!-- Explore: open results that already exist; nothing runs -->
+    <div id="mode-explore" class="mode-panel" role="tabpanel" aria-labelledby="tab-explore">
+      <p class="mode-intro">Open a result that is already saved. No model runs and nothing is written.</p>
+
+      <div class="form-group">
+        <label for="curated-select">Example results</label>
+        <select id="curated-select">
+          <option value="">(loading…)</option>
+        </select>
+        <p id="curated-empty" class="help" hidden>No example results are bundled — use Open by ID or run the mock example.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="recent-select">Recent runs</label>
+        <select id="recent-select">
+          <option value="">(none yet)</option>
+        </select>
+        <p class="help">Runs started from this page, newest first: time · outcome status · backend.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="open-id-input">Open a run by ID <button type="button" class="info-btn" data-guide="identity" aria-label="About run IDs">ⓘ</button></label>
+        <div class="inline-field">
+          <input id="open-id-input" type="text" spellcheck="false" autocomplete="off"
+            placeholder="e.g. connector_run_abc123" aria-describedby="open-id-help">
+          <button id="open-id-button" type="button">Open</button>
+        </div>
+        <p id="open-id-help" class="help">Finds any run saved under
+          <code>connector/runs/&lt;run id&gt;/</code>, including runs started from the command line.</p>
+        <p id="open-id-message" class="inline-message" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <!-- Evaluate: submit new commentary through the pipeline -->
+    <div id="mode-evaluate" class="mode-panel" role="tabpanel" aria-labelledby="tab-evaluate" hidden>
+      <div class="form-group">
+        <label for="example-select">1. Start from an example (optional)</label>
+        <select id="example-select">
+          <option value="">(loading…)</option>
+        </select>
+        <p class="help">Fills the box below. Nothing runs until you press Run.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="raw-input">2. Your commentary <button type="button" class="info-btn" data-guide="commentary" aria-label="About what to paste">ⓘ</button></label>
+        <p id="raw-input-hint" class="help">Prose describing what you see in markets: what is rising or falling, where, over what horizon.
+          Avoid wording that reads like a trading instruction.</p>
+        <textarea id="raw-input" rows="8" aria-describedby="raw-input-hint raw-input-count raw-input-message"
+          placeholder="Paste market commentary here…"></textarea>
+        <div class="textarea-foot">
+          <span id="raw-input-message" class="inline-message warn" role="status" aria-live="polite"></span>
+          <span id="raw-input-count" class="char-count">0 characters</span>
+        </div>
+      </div>
+
+      <fieldset class="models-block">
+        <legend>3. Models for this run <button type="button" class="info-btn" data-guide="models" aria-label="About models and backend profiles">ⓘ</button></legend>
+        <div class="role-row">
+          <label for="builder-backend-select">Step 1 — Builder <span class="role-hint">(reads your commentary)</span></label>
+          <select id="builder-backend-select">
+            <option value="mock">mock — replays bundled sample output (no model call)</option>
+          </select>
+        </div>
+        <div class="role-row">
+          <label for="evaluator-backend-select">Step 2 — Evaluator <span class="role-hint">(judges the matches)</span></label>
+          <select id="evaluator-backend-select">
+            <option value="mock">mock — replays bundled sample output (no model call)</option>
+          </select>
+        </div>
+        <label class="check-label"><input id="same-profile" type="checkbox" checked> Use the same profile for both</label>
+        <p id="time-limit-line" class="help"></p>
+        <p id="roles-file-note" class="help" hidden></p>
+      </fieldset>
+
+      <div id="mock-notice" class="mock-notice" role="note" hidden>
+        <strong>Mock replays a fixed sample result.</strong> It does not read your commentary, so the result will be
+        the bundled sample regardless of what you type.
+        <a href="#guide-mock" data-guide="mock">What “mock” means</a>
+      </div>
+
+      <div class="run-row">
+        <button id="run-button" type="button" aria-describedby="run-message">4. Run evaluation</button>
+        <span id="run-message" class="inline-message error" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Identity of the run whose result is shown below -->
+  <section id="now-viewing" class="now-viewing" aria-label="Now viewing" hidden>
+    <div class="nv-head">
+      <span class="nv-label">Now viewing</span>
+      <button type="button" class="info-btn" data-guide="identity" aria-label="About which run you are viewing">ⓘ</button>
+      <span id="nv-outcome"></span>
+    </div>
+    <div id="nv-runid" class="nv-runid mono"></div>
+    <div id="nv-details" class="nv-details"></div>
+    <div id="nv-roles" class="nv-roles"></div>
+    <div class="nv-actions">
+      <button id="copy-link-button" type="button" class="secondary">Copy link</button>
+      <span id="copy-link-status" class="inline-message" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <!-- Result + context: side-by-side panes on wide screens, one scrolling pane otherwise -->
+  <div id="results-area" class="results-area">
+  <!-- Evaluation result panel -->
+  <section id="panel-evaluation-result" class="panel panel-result" data-outcome="none">
+    <h2 class="panel-title"><span class="panel-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3.5" /></svg></span>
+      <span class="panel-step">2</span> Evaluation result <button type="button" class="info-btn" data-guide="outcomes" aria-label="About outcomes">ⓘ</button></h2>
+    <div id="result-body" class="result-empty">No run selected yet. Open a saved result or evaluate your commentary to see a result here.</div>
+    <div id="near-miss-region"></div>
+  </section>
+
+  <!-- Signal context / posture panel -->
+  <section id="panel-signal-context" class="panel panel-context">
+    <h2 class="panel-title"><span class="panel-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z" /><path d="M9 12h7M9 16h7M14 3v5h5" /></svg></span>
+      <span class="panel-step">3</span> Context, input &amp; files</h2>
+    <div id="context-body" class="result-empty">No run selected yet.</div>
+  </section>
+  </div>
+</main>
+
+<!-- Guide: authored static help (no model data). JS only shows, hides, scrolls and focuses. -->
+<div id="guide-backdrop" class="guide-backdrop" hidden></div>
+<aside id="guide" class="guide" role="complementary" aria-labelledby="guide-title" hidden tabindex="-1">
+  <div class="guide-bar">
+    <h2 id="guide-title">Guide</h2>
+    <button id="guide-close" type="button" class="guide-close" aria-label="Close guide">×</button>
+  </div>
+  <div id="guide-scroll" class="guide-scroll">
+    <nav class="guide-contents" aria-label="Guide contents">
+      <p id="guide-context" class="guide-context" hidden></p>
+      <details id="guide-toc" open>
+        <summary>Contents</summary>
+        <ol>
+          <li><a href="#guide-start" data-guide="start">Start here: what this app does</a></li>
+          <li><a href="#guide-modes" data-guide="modes">Explore vs. evaluate</a></li>
+          <li><a href="#guide-commentary" data-guide="commentary">What to paste</a></li>
+          <li><a href="#guide-models" data-guide="models">Models, roles, and backend profiles</a></li>
+          <li><a href="#guide-mock" data-guide="mock">What “mock” means</a></li>
+          <li><a href="#guide-running" data-guide="running">What happens during a run</a></li>
+          <li><a href="#guide-identity" data-guide="identity">Which run am I viewing?</a></li>
+          <li><a href="#guide-outcomes" data-guide="outcomes">Match, no match, failed</a></li>
+          <li><a href="#guide-confidence" data-guide="confidence">Confidence and match strength</a></li>
+          <li><a href="#guide-matched" data-guide="matched">Reading a matched state</a></li>
+          <li><a href="#guide-citations" data-guide="citations">Evidence citations</a></li>
+          <li><a href="#guide-rejections" data-guide="rejections">Rejected candidates and reason labels</a></li>
+          <li><a href="#guide-neighbors" data-guide="neighbors">Similar states not sent to the evaluator</a></li>
+          <li><a href="#guide-limits" data-guide="limits">Limits, caveats, and missing observations</a></li>
+          <li><a href="#guide-posture" data-guide="posture">Posture labels</a></li>
+          <li><a href="#guide-checks" data-guide="checks">Pipeline checks</a></li>
+          <li><a href="#guide-packet" data-guide="packet">How the builder read your commentary</a></li>
+          <li><a href="#guide-files" data-guide="files">Files and downloads</a></li>
+          <li><a href="#guide-failure" data-guide="failure">When a run fails</a></li>
+          <li><a href="#guide-not-meaning" data-guide="not-meaning">What results do not mean</a></li>
+        </ol>
+      </details>
+    </nav>
+
+    <section id="guide-start" class="guide-topic">
+      <h3 tabindex="-1">Start here: what this app does</h3>
+      <p>This app takes a piece of market commentary and checks it against the <em>Market Book</em>, a curated
+      research catalogue of market states. Each state comes with the observable signs, failure patterns, and policy
+      implications that the research associates with it. A <em>builder</em> model turns your text into structured observations.
+      A search step finds the states that look most similar. An <em>evaluator</em> model then decides which of those states, if any, the observations
+      actually support, and it cites the research records it relied on.</p>
+      <p>The result is research context for an analyst to review. It
+      does not measure the market, verify your commentary, or tell you to trade. You can explore saved results without any
+      setup; evaluating your own text requires a configured command-line model (see <a href="#guide-models" data-guide="models">Models</a>).</p>
+      <p class="guide-related">Related: <a href="#guide-modes" data-guide="modes">Explore vs. evaluate</a> · <a href="#guide-outcomes" data-guide="outcomes">Match, no match, failed</a> · <a href="#guide-not-meaning" data-guide="not-meaning">What results do not mean</a></p>
+    </section>
+
+    <section id="guide-modes" class="guide-topic">
+      <h3 tabindex="-1">Explore vs. evaluate</h3>
+      <p><em>Explore</em> opens results that are already saved. No model runs, and nothing is
+      written. <em>Evaluate</em> sends your commentary through the full pipeline using the models you choose, which can take several
+      minutes and, with a cloud model, uses your model account. Loading an example into the text box does not run anything.</p>
+      <p class="guide-related">Related: <a href="#guide-commentary" data-guide="commentary">What to paste</a> · <a href="#guide-models" data-guide="models">Models</a> · <a href="#guide-identity" data-guide="identity">Which run am I viewing?</a></p>
+    </section>
+
+    <section id="guide-commentary" class="guide-topic">
+      <h3 tabindex="-1">What to paste</h3>
+      <p>Prose describing what you see in markets, for example a morning note, a paragraph from a
+      research piece, or your own observations. It does not need a fixed format. Specific, observable statements (what is rising
+      or falling, where, over what horizon) give the builder more to work with. Phrases that read as trading instructions
+      will cause the run to be rejected.</p>
+      <p class="guide-related">Related: <a href="#guide-packet" data-guide="packet">How the builder read your commentary</a> · <a href="#guide-failure" data-guide="failure">When a run fails</a></p>
+    </section>
+
+    <section id="guide-models" class="guide-topic">
+      <h3 tabindex="-1">Models, roles, and backend profiles</h3>
+      <p>Two steps use a model: the <em>builder</em> reads your commentary, and the
+      <em>evaluator</em> judges candidate states. Each uses a <em>backend profile</em>, a named command-line tool configuration
+      defined in the backend profile file the dashboard was started with (by default <code>connector/configs/backend_profiles.example.yaml</code>). The model itself may run locally or
+      in the cloud, depending on that tool. The two roles may use the same profile or different ones. This page sends your
+      choice for each role explicitly, so the profiles shown are the ones that run. The time limit shown is each profile's
+      per-step limit.</p>
+      <p class="guide-related">Related: <a href="#guide-mock" data-guide="mock">What “mock” means</a> · <a href="#guide-running" data-guide="running">What happens during a run</a></p>
+    </section>
+
+    <section id="guide-mock" class="guide-topic">
+      <h3 tabindex="-1">What “mock” means</h3>
+      <p><code>mock</code> does not call a model. It copies a bundled sample output, so the result is the
+      same sample whatever you type. Use it to check that the app is installed correctly and to see what a result looks like.</p>
+      <p class="guide-related">Related: <a href="#guide-models" data-guide="models">Models, roles, and backend profiles</a></p>
+    </section>
+
+    <section id="guide-running" class="guide-topic">
+      <h3 tabindex="-1">What happens during a run</h3>
+      <p>The steps run in this order: your text is saved and fingerprinted; the builder produces
+      structured observations; they are checked for format and prohibited wording; a local search picks candidate states
+      from the catalogue; the evaluator judges each candidate; its output is checked; and a context record is built. The page
+      learns only when the whole run finishes. It checks every two seconds. Model steps can take minutes. You can
+      leave the page; the run appears under Recent runs when it finishes. The dashboard cannot cancel a run.</p>
+      <p class="guide-related">Related: <a href="#guide-checks" data-guide="checks">Pipeline checks</a> · <a href="#guide-identity" data-guide="identity">Which run am I viewing?</a></p>
+    </section>
+
+    <section id="guide-identity" class="guide-topic">
+      <h3 tabindex="-1">Which run am I viewing? Saved runs and run IDs</h3>
+      <p>The “Now viewing” bar names the run whose result is shown, where you opened it from,
+      and which profile each role used. The commentary box in <em>Evaluate</em> is for new submissions; it is not the input of the
+      run you are viewing. That input is under <em>Submitted commentary</em>. Every run is saved in <code>connector/runs/&lt;run id&gt;/</code>.
+      Runs started from this page are listed under Recent runs. Runs started from the command line may not be listed, so open them
+      with <em>Open a run by ID</em>. <em>Copy link</em> gives a URL that reopens the same run.</p>
+      <p class="guide-related">Related: <a href="#guide-files" data-guide="files">Files and downloads</a> · <a href="#guide-modes" data-guide="modes">Explore vs. evaluate</a></p>
+    </section>
+
+    <section id="guide-outcomes" class="guide-topic">
+      <h3 tabindex="-1">Match, no match, failed</h3>
+      <p><em>Supported match found</em>: the evaluator accepted one or more candidate states as
+      supported by your observations.</p>
+      <p><em>No supported match found</em>: the pipeline completed and the evaluator concluded that
+      none of the candidates is supported. This is a legitimate answer, not an error. It happens either when the
+      phenomenon is not in the catalogue or when it is, but for a different asset class. The rationale explains which.</p>
+      <p><em>Failed</em>: the pipeline stopped before producing a checked evaluation. That is a software or validation outcome, not a judgment about your commentary.</p>
+      <p class="guide-related">Related: <a href="#guide-confidence" data-guide="confidence">Confidence and match strength</a> · <a href="#guide-failure" data-guide="failure">When a run fails</a> · <a href="#guide-not-meaning" data-guide="not-meaning">What results do not mean</a></p>
+    </section>
+
+    <section id="guide-confidence" class="guide-topic">
+      <h3 tabindex="-1">Confidence and match strength</h3>
+      <p><em>Support for this conclusion</em> is the evaluator's overall rating of the evidence:
+      well, partially, weakly, or un-supported. For a no-match, it rates the evidence for <em>not</em> matching. <em>Match strength</em>
+      (strong, moderate, weak) rates a single matched state by how much of the evidence the state expects your observations actually supply.
+      Neither is a probability or a forecast.</p>
+      <p class="guide-related">Related: <a href="#guide-matched" data-guide="matched">Reading a matched state</a> · <a href="#guide-limits" data-guide="limits">Limits</a> · <a href="#guide-not-meaning" data-guide="not-meaning">What results do not mean</a></p>
+    </section>
+
+    <section id="guide-matched" class="guide-topic">
+      <h3 tabindex="-1">Reading a matched state</h3>
+      <p>The card shows the catalogue state and which of your observations support it.
+      It lists the evaluator's evidence caveats, meaning what it could not confirm. Then come the research records it cited, and known ways this reading can
+      be wrong. Read the caveats before the citations.</p>
+      <p class="guide-related">Related: <a href="#guide-citations" data-guide="citations">Evidence citations</a> · <a href="#guide-confidence" data-guide="confidence">Match strength</a> · <a href="#guide-posture" data-guide="posture">Posture labels</a></p>
+    </section>
+
+    <section id="guide-citations" class="guide-topic">
+      <h3 tabindex="-1">Evidence citations</h3>
+      <p>Each citation is a record from the Market Book catalogue: an <em>observable signature</em>,
+      <em>policy implication</em>, <em>failure pattern</em>, or <em>cited claim</em>. The text is shown as stored in the catalogue. The pipeline
+      checks that every cited record belongs to the candidate being matched; it does not check that the record fully proves the match.</p>
+      <p class="guide-related">Related: <a href="#guide-matched" data-guide="matched">Reading a matched state</a> · <a href="#guide-checks" data-guide="checks">Pipeline checks</a></p>
+    </section>
+
+    <section id="guide-rejections" class="guide-topic">
+      <h3 tabindex="-1">Rejected candidates and reason labels</h3>
+      <p>These states were sent to the evaluator and rejected. Labels:</p>
+      <ul>
+        <li><em>different asset class / scope</em>;</li>
+        <li><em>not enough evidence in the input</em>;</li>
+        <li><em>surface-similar, different phenomenon</em>;</li>
+        <li><em>opposite direction</em> (your observations move the other way from what the state expects);</li>
+        <li><em>sibling state fits better</em>.</li>
+      </ul>
+      <p>“Why retrieval suggested it” shows the records that made the search step pick it.</p>
+      <p class="guide-related">Related: <a href="#guide-neighbors" data-guide="neighbors">Similar states not sent to the evaluator</a> · <a href="#guide-outcomes" data-guide="outcomes">Match, no match, failed</a></p>
+    </section>
+
+    <section id="guide-neighbors" class="guide-topic">
+      <h3 tabindex="-1">Similar states not sent to the evaluator</h3>
+      <p>The search step ranks every state by textual similarity and sends only
+      a shortlist to the evaluator. These are the next-highest-ranked states just outside that shortlist. The evaluator never judged
+      them. The score is a similarity measure used for ranking, not a probability and not a near-match.</p>
+      <p class="guide-related">Related: <a href="#guide-rejections" data-guide="rejections">Rejected candidates</a> · <a href="#guide-confidence" data-guide="confidence">Match strength</a></p>
+    </section>
+
+    <section id="guide-limits" class="guide-topic">
+      <h3 tabindex="-1">Limits, caveats, and missing observations</h3>
+      <p><em>Caveats</em> are the evaluator's own statements of what the evidence
+      does not establish. <em>Declared missing observations</em> lists only the specific observations the evaluator flagged
+      as absent in a structured field. An empty list does <strong>not</strong> mean nothing is missing; gaps described in the caveats still
+      apply. <em>Constraints on use</em> and <em>Follow-up measurements listed</em> are derived automatically from those declarations and from weak
+      matches. <em>Ways this reading could be wrong</em> are failure modes attached to the matched states.</p>
+      <p class="guide-related">Related: <a href="#guide-not-meaning" data-guide="not-meaning">What results do not mean</a> · <a href="#guide-checks" data-guide="checks">Pipeline checks</a></p>
+    </section>
+
+    <section id="guide-posture" class="guide-topic">
+      <h3 tabindex="-1">Posture labels</h3>
+      <p>Each matched state gets one label from a fixed monitoring vocabulary. The labels are:
+      defensive monitoring, risk-off monitoring, neutral observation, regime dependent, caution flagged, no actionable posture,
+      and unsupported. When nothing matches, the posture is <em>no actionable posture</em>. These labels are context for an analyst, not a
+      recommendation to act.</p>
+      <p class="guide-related">Related: <a href="#guide-matched" data-guide="matched">Reading a matched state</a> · <a href="#guide-not-meaning" data-guide="not-meaning">What results do not mean</a></p>
+    </section>
+
+    <section id="guide-checks" class="guide-topic">
+      <h3 tabindex="-1">Pipeline checks</h3>
+      <p>These checks show whether each pipeline step completed, and whether the three validators passed: builder output,
+      evaluator output, and context record. They confirm structure, allowed wording, and valid references. They do <strong>not</strong>
+      confirm that the interpretation is right.</p>
+      <p class="guide-related">Related: <a href="#guide-running" data-guide="running">What happens during a run</a> · <a href="#guide-failure" data-guide="failure">When a run fails</a></p>
+    </section>
+
+    <section id="guide-packet" class="guide-topic">
+      <h3 tabindex="-1">How the builder read your commentary</h3>
+      <p>This is the builder model's summary, asset scope, date/horizon, and numbered
+      observations. Each observation has a dimension, a direction, a magnitude, and a statement. All of them are taken from your text; none
+      is a fresh market measurement. The evaluator refers to observations by their number.</p>
+      <p class="guide-related">Related: <a href="#guide-commentary" data-guide="commentary">What to paste</a> · <a href="#guide-matched" data-guide="matched">Reading a matched state</a></p>
+    </section>
+
+    <section id="guide-files" class="guide-topic">
+      <h3 tabindex="-1">Files and downloads</h3>
+      <p><em>Signal context (JSON/YAML)</em> is a compact machine-readable summary of posture, caveats,
+      constraints, and source-file paths. It is not a copy of this page, and some fields shown here, such as the observation summary, can be
+      empty in it. It exists only when the run completed. All other files are saved under the run's folder. The
+      <em>input fingerprint</em> identifies the exact text used; it does not vouch for it.</p>
+      <p class="guide-related">Related: <a href="#guide-identity" data-guide="identity">Saved runs and run IDs</a></p>
+    </section>
+
+    <section id="guide-failure" class="guide-topic">
+      <h3 tabindex="-1">When a run fails</h3>
+      <p>The explanation names the step that stopped and why. <em>Output failed validation</em> means a
+      model produced output that broke the format or wording rules, and the pipeline refused to continue. <em>The pipeline did not
+      complete</em> means a step errored, for example a CLI time-out or a missing configuration. Anything shown below the failure was produced
+      before it and is marked <em>Not validated</em>. Technical details are available for troubleshooting.</p>
+      <p class="guide-related">Related: <a href="#guide-checks" data-guide="checks">Pipeline checks</a> · <a href="#guide-commentary" data-guide="commentary">What to paste</a> · <a href="#guide-outcomes" data-guide="outcomes">Match, no match, failed</a></p>
+    </section>
+
+    <section id="guide-not-meaning" class="guide-topic">
+      <h3 tabindex="-1">What results do not mean</h3>
+      <p>A result is not a market measurement or a forecast. It does not confirm that your commentary is true,
+      and it is not a trading instruction. Passing checks means the output is well-formed, not that it is correct. An empty field means
+      nothing was recorded there, not that nothing is missing.</p>
+      <p class="guide-related">Related: <a href="#guide-limits" data-guide="limits">Limits</a> · <a href="#guide-confidence" data-guide="confidence">Confidence and match strength</a> · <a href="#guide-start" data-guide="start">Start here</a></p>
+    </section>
+  </div>
+</aside>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

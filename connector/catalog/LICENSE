@@ -1,0 +1,25 @@
+Market Book catalogue
+Copyright (c) 2026 Egemen Candir
+
+The following files are licensed under the Creative Commons Attribution 4.0
+International License (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+
+  - connector/catalog/market_book_catalog.stage6_enriched.json
+  - connector/catalog/glossed/e5/catalog_embedding_index.npz (its text content)
+  - connector/catalog/CATALOGUE_ERRATA.md
+  - connector/configs/retrieval_targets.v1.yaml (its descriptions)
+
+You may share and adapt this material for any purpose, including commercially,
+provided you give appropriate credit, link to the licence, and indicate if
+changes were made. Suggested credit:
+
+  "Market Book catalogue by Egemen Candir, licensed under CC BY 4.0."
+
+Not covered: the research papers the catalogue cites. They remain the property
+of their authors and publishers and are credited in SOURCES.md. The catalogue
+records are the project's own summaries and interpretations of that research;
+citing a paper does not imply endorsement by its authors.
+
+The code in this repository is licensed separately under the MIT License (see
+LICENSE in the repository root).

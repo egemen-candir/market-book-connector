@@ -1,0 +1,108 @@
+# Evaluation golden: evaluator output recorded from a live run on
+# connector/examples/golden_inputs/risk_on_breadth_weak.md, with the builder on mock.
+# The mock evaluator replays this file; it passed evaluation validation.
+evaluation_id: eval_9f54d63e6f1e
+observation_id: obs_57e0de2b5e12
+candidate_set_id: cand_092e11c4b278c488
+evaluation_version: "0.2"
+market_book_version: stage6_accepted
+verdict: matched
+matched_states:
+  - entry_id: entry_forbes_heteroscedasticity_bias_001
+    state_id: state_forbes_heteroscedasticity_bias_001
+    match_strength: weak
+    matched_observations: [2, 3]
+    citations:
+      - record_id: signature_forbes_unadjusted_correlation_bias_001
+        kind: observable_signature
+      - record_id: policy_forbes_bias_correction_001
+        kind: policy_implication
+    evidence_caveats: "The activation setting the state names is supplied: a cross-asset correlation reading taken during a period of rising volatility with no heteroscedasticity adjustment applied, which is when the record says the unadjusted conditional correlation overstates the true unconditional correlation. What is not supplied is any magnitude: the relative variance increase delta and the underlying correlation level are described only qualitatively, so the bias factor cannot be computed and the corrected correlation is unknown. The packet therefore cannot show how much of the observed correlation increase survives correction."
+    failure_modes:
+      - unadjusted correlation read as contagion
+      - delta magnitude unmeasured
+      - constant transmission assumed
+    policy_posture: caution_flagged
+non_matches:
+  - entry_id: entry_hurst_tsmom_trend_following_001
+    state_id: state_hurst_tsmom_trend_following_001
+    reason_code: out_of_scope
+    reason: "The state is defined over diversified multi-asset futures portfolios, with horizon Sharpe ratios averaged across 58 liquid futures contracts and near-zero S&P 500 correlation. This packet's asset scope is US large-cap and small-cap equity, which is outside the futures universe the state describes."
+  - entry_id: entry_hasbrouck_january_effect_004
+    state_id: state_hasbrouck_january_effect_004
+    reason_code: insufficient_evidence
+    reason: "The state requires a cross-sectional relationship between effective trading costs and future returns concentrated in January. The packet supplies no effective-cost measurements at all and its as-of date is late June, so neither the named signature nor the seasonal activation condition is evidenced."
+  - entry_id: entry_amihud_size_interaction_005
+    state_id: state_amihud_size_interaction_005
+    reason_code: insufficient_evidence
+    reason: "The state's behavior is a size-stratified illiquidity premium evidenced by measured price impact, ILLIQ, and Fama-MacBeth premia across size-sorted stocks. The packet states that small-cap liquidity is not directly measured, so it supplies the small-cap and liquidity vocabulary but none of the measured behavior the signature describes."
+  - entry_id: entry_lo_mackinlay_short_horizon_predictability_001
+    state_id: state_lo_mackinlay_short_horizon_predictability_001
+    reason_code: insufficient_evidence
+    reason: "The state is identified by weekly variance ratios near 1.30 and first-order autocorrelations graded by market capitalization. The packet reports a qualitative upward grind in large-cap indices and no autocorrelation, variance-ratio, or size-quintile statistics, so the random-walk rejection the state rests on is unevidenced."
+  - entry_id: entry_billio_hedge_fund_illiquidity_003
+    state_id: state_billio_hedge_fund_illiquidity_003
+    reason_code: out_of_scope
+    reason: "The state is explicitly specific to hedge fund returns, identified by AR(1) serial correlation on monthly hedge fund returns relative to banks, broker-dealers, and insurers. This packet's asset scope is US large-cap and small-cap equity, which the state does not cover."
+  - entry_id: entry_hasbrouck_taq_correlation_002
+    state_id: state_hasbrouck_taq_correlation_002
+    reason_code: coincidental_neighbor
+    reason: "The correlation in this state is a rank correlation of about 0.965 between Gibbs cost estimates and TAQ effective spreads, that is, an estimator-validation property, not cross-asset return co-movement. It was surfaced by shared correlation vocabulary and does not fit the dimension the packet observes."
+  - entry_id: entry_ang_2011_exceedance_asymmetry_003
+    state_id: state_ang_2011_exceedance_asymmetry_003
+    reason_code: insufficient_evidence
+    reason: "The state's behavior is an asymmetry between lower-quantile and upper-quantile exceedance correlations, and it is active where regime-switching models with separate bear-regime correlation parameters are estimated. The packet reports only that correlations are increasing, with no quantile-conditional decomposition and no regime-switching estimation."
+  - entry_id: entry_hasbrouck_return_premium_003
+    state_id: state_hasbrouck_return_premium_003
+    reason_code: insufficient_evidence
+    reason: "The state requires portfolio sorts on Gibbs effective trading cost showing higher subsequent returns for higher-cost stocks. The packet states that no direct transaction-cost measurements are available, so neither the named signature nor any substitute evidence of the premium is present."
+  - entry_id: entry_ang_bekaert_bear_correlation_002
+    state_id: state_ang_bekaert_bear_correlation_002
+    reason_code: direction_discordant
+    reason: "The state describes correlations roughly 20 percentage points higher during the bear regime, and is active whenever the filtered bear-regime probability is elevated, that is, during market downturns. The packet observes large-cap indices near their highs and prices still grinding upward, a direction opposite to the downturn the state describes, so the rising-correlation observation cannot be attributed to it."
+  - entry_id: entry_amihud_illiq_persistence_004
+    state_id: state_amihud_illiq_persistence_004
+    reason_code: insufficient_evidence
+    reason: "The state is a measured structural property of aggregate NYSE ILLIQ, an AR(1) coefficient of 0.945 with R-squared of 0.89 at monthly frequency. The packet supplies no ILLIQ series and no persistence estimate, and its only liquidity observation is explicitly not directly measured."
+  - entry_id: entry_gatev_pairs_mean_reversion_001
+    state_id: state_gatev_pairs_mean_reversion_001
+    reason_code: coincidental_neighbor
+    reason: "The state concerns co-moving equity pairs whose spreads diverge beyond two standard deviations and revert within six-month windows, with returns net of bid-ask bounce. The packet contains no pair-level spreads or convergence data; retrieval was driven by shared transaction-cost and sector vocabulary rather than by dimension fit."
+  - entry_id: entry_amihud_crosssection_premium_002
+    state_id: state_amihud_crosssection_premium_002
+    reason_code: insufficient_evidence
+    reason: "The state is identified by a Fama-MacBeth coefficient of 0.162 on expected ILLIQ after controls. The packet provides no ILLIQ values and no cross-sectional return regression, so the priced-illiquidity behavior is unevidenced by the same deficit that rejects the other illiquidity-premium candidates."
+  - entry_id: entry_hamilton_arch_volatility_clustering_004
+    state_id: state_hamilton_arch_volatility_clustering_004
+    reason_code: insufficient_evidence
+    reason: "The state is active whenever GARCH persistence parameters are large and squared-return autocorrelations are significant. The packet reports only that realized and implied volatility are ticking up, at weak magnitude, which is a level change rather than the clustering persistence the state names; no conditional-variance parameters or squared-return autocorrelations are supplied."
+  - entry_id: entry_poterba_summers_long_horizon_mean_reversion_001
+    state_id: state_poterba_summers_long_horizon_mean_reversion_001
+    reason_code: insufficient_evidence
+    reason: "The state's behavior is a flip from positive serial correlation at sub-annual horizons to negative serial correlation at three-to-eight-year horizons, with a transitory component of 15 to 37 percent standard deviation. The packet observes only current-period direction and supplies no multi-year autocorrelation or transitory-variance evidence."
+prohibited_actions:
+  - go long
+  - go short
+  - go flat
+  - enter a position
+  - exit a position
+  - increase position
+  - reduce position
+  - position size
+  - size the position
+  - place an order
+  - execute a trade
+  - stop loss
+  - take profit
+  - portfolio allocation
+  - trade recommendation
+  - rebalance into
+  - leverage
+overall_interpretation:
+  summary: "One state matches weakly. The rising cross-asset correlation reading co-occurs with rising volatility, which is precisely the setting in which the Forbes-Rigobon record says an uncorrected correlation overstates true co-movement, so part of the observed correlation increase may be a measurement artifact rather than a change in interdependence; the magnitude of that bias cannot be computed from this packet. Everything else fails. The bear-regime correlation state is discordant with large-cap indices near their highs. The illiquidity-premium, illiquidity-persistence, short-horizon autocorrelation, exceedance-asymmetry, and volatility-clustering states all require measured effective costs, ILLIQ, autocorrelations, quantile-conditional correlations, or GARCH persistence that this packet explicitly does not supply. The trend-following and hedge-fund states describe multi-asset futures and hedge fund returns rather than this packet's US equity scope. Deteriorating breadth alongside a still-rising index and unmeasured small-cap liquidity are observed but unmatched, and no candidate in this set describes breadth participation directly."
+  dominant_themes:
+    - correlation measurement bias
+    - unmeasured liquidity
+    - breadth and price divergence
+    - regime direction mismatch
+  confidence: weakly_supported

@@ -1,0 +1,147 @@
+# Schema: Market Book Evaluation (D-P3-4 contract)
+# Human/structural reference.  Authoritative validation lives in
+# connector/tools/validate_market_book_evaluation.py.
+
+type: object
+required:
+  - evaluation_id
+  - observation_id
+  - candidate_set_id
+  - verdict
+  - matched_states
+  - non_matches
+  - prohibited_actions
+  - overall_interpretation
+  - evaluation_version
+  - market_book_version
+
+properties:
+  evaluation_id:
+    type: string
+    description: "eval_ + first 12 hex of sha256 of observation_id."
+  observation_id:
+    type: string
+  candidate_set_id:
+    type: string
+
+  verdict:
+    type: string
+    enum: [matched, no_match_not_in_book, no_match_out_of_scope]
+    description: "matched => matched_states non-empty. Both no_match verdicts => matched_states empty AND no_match_rationale required. not_in_book = phenomenon absent from corpus (absence set); out_of_scope = phenomenon in corpus, asset class is not (boundary set)."
+
+  no_match_rationale:
+    type: string
+    description: "Required when verdict is no_match_not_in_book or no_match_out_of_scope. Justifies the refusal in record-text terms. Absent/ignored when verdict is matched."
+
+  matched_states:
+    type: array
+    description: "Subset of candidate entries that match the observation. Non-empty iff verdict=matched."
+    items:
+      type: object
+      required:
+        - entry_id
+        - state_id
+        - match_strength
+        - matched_observations
+        - citations
+        - evidence_caveats
+        - policy_posture
+      properties:
+        entry_id:
+          type: string
+          description: "Must be a member of the candidate set (S5-checked)."
+        state_id:
+          type: string
+        match_strength:
+          type: string
+          enum: [strong, moderate, weak, none]
+        matched_observations:
+          type: array
+          description: "Indices into observation_packet.observations[]. Vocabulary-free by design (kills F10 drift). Every index must be in range and unique."
+          items:
+            type: integer
+            minimum: 0
+          uniqueItems: true
+        missing_observations:
+          type: array
+          description: "Optional. Indices (into the packet) the state expects but the observation lacks."
+          items:
+            type: integer
+            minimum: 0
+          uniqueItems: true
+        citations:
+          type: array
+          minItems: 1
+          description: "Every matched_state must cite >=1 record. record_id must be in the candidate's linked records; kind excludes glosses (F4). An uncited match is invalid."
+          items:
+            type: object
+            required:
+              - record_id
+              - kind
+            properties:
+              record_id:
+                type: string
+              kind:
+                type: string
+                enum: [observable_signature, failure_pattern, policy_implication, extracted_claim]
+              excerpt:
+                type: string
+        evidence_caveats:
+          type: string
+        failure_modes:
+          type: array
+          items:
+            type: string
+        policy_posture:
+          type: string
+          enum: [defensive_monitoring, risk_off_monitoring, neutral_observation, regime_dependent, caution_flagged, no_actionable_posture, unsupported]
+
+  non_matches:
+    type: array
+    description: "Candidates rejected, with a structured reason. A discordant-direction entry lands here with reason_code direction_discordant (makes the flip set mechanically scorable)."
+    items:
+      type: object
+      required:
+        - entry_id
+        - state_id
+        - reason_code
+        - reason
+      properties:
+        entry_id:
+          type: string
+        state_id:
+          type: string
+        reason_code:
+          type: string
+          enum: [direction_discordant, out_of_scope, coincidental_neighbor, family_sibling_rejected, insufficient_evidence]
+        reason:
+          type: string
+          description: "Human-facing; renders in the near-miss panel."
+
+  prohibited_actions:
+    type: array
+    description: "Exempt field: may contain prohibited trading phrases. (Left unchanged per D-P3-4 3.6.)"
+    items:
+      type: string
+
+  overall_interpretation:
+    type: object
+    required:
+      - summary
+      - confidence
+    properties:
+      summary:
+        type: string
+      dominant_themes:
+        type: array
+        items:
+          type: string
+      confidence:
+        type: string
+        enum: [well_supported, partially_supported, weakly_supported, unsupported]
+
+  evaluation_version:
+    type: string
+  market_book_version:
+    type: string
+    description: 'Always "stage6_accepted".'

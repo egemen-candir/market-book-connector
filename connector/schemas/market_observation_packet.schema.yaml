@@ -1,0 +1,109 @@
+# Schema: Market Observation Packet
+# Human/structural reference. Authoritative validation lives in
+# connector/tools/validate_observation_packet.py.
+# market_book_version is always "stage6_accepted".
+#
+# Light, open structure: the packet is structured but uses no fixed label set.
+# `summary` and the open `observations` list (model-chosen
+# dimension/direction/magnitude, all free text) are the only content fields.
+# Provenance fields and prohibited_content_flags round out the packet.
+
+type: object
+required:
+  - packet_version
+  - observation_id
+  - created_at_utc
+  - market_book_version
+  - input_reference
+  - as_of
+  - asset_scope
+  - summary
+  - observations
+  - prohibited_content_flags
+
+properties:
+  packet_version:
+    type: string
+  observation_id:
+    type: string
+    description: "obs_ + first 12 hex of sha256 of the raw input body."
+  created_at_utc:
+    type: string
+    description: ISO 8601 UTC string.
+  market_book_version:
+    type: string
+    description: Always "stage6_accepted".
+  input_reference:
+    type: object
+    required: [raw_input_hash, raw_input_path, source_type]
+    properties:
+      raw_input_hash:
+        type: string
+        pattern: "^sha256:[0-9a-fA-F]+$"
+        description: "sha256: + hex of the raw input body."
+      raw_input_path:
+        type: string
+      source_type:
+        type: string
+  as_of:
+    type: object
+    required: [date, timezone, observation_horizon]
+    properties:
+      date:
+        type: string
+        description: ISO date YYYY-MM-DD.
+      timezone:
+        type: string
+      observation_horizon:
+        type: string
+  asset_scope:
+    type: array
+    items:
+      type: string
+  summary:
+    type: string
+    minLength: 1
+    description: >-
+      Normalized natural-language summary of the commentary. Required and
+      non-empty; it is what the later retriever embeds. Must not contain Market
+      Book identifiers or trading-instruction language.
+  observations:
+    type: array
+    description: >-
+      Open-ended list of model-authored observations. The
+      dimension/direction/magnitude labels are free text authored by the model.
+    minItems: 1
+    items:
+      type: object
+      required: [statement, dimension]
+      properties:
+        statement:
+          type: string
+          minLength: 1
+          description: A single market observation in natural language. Must be non-empty.
+        dimension:
+          type: string
+          minLength: 1
+          description: >-
+            A label the model authors freely (e.g. volatility, breadth,
+            liquidity) to categorize the observation. Must be non-empty.
+        direction:
+          type: [string, "null"]
+          description: >-
+            Model's own word for orientation (e.g. rising, weakening, stable).
+            Free text, nullable.
+        magnitude:
+          type: [string, "null"]
+          description: >-
+            Model's own qualifier for intensity (e.g. strong, moderate, mild).
+            Free text, nullable.
+  prohibited_content_flags:
+    type: object
+    description: All values must be false for a valid packet.
+    required:
+      - contains_trade_recommendation
+      - contains_position_sizing
+      - contains_policy_conclusion
+      - contains_market_book_state_id
+    additionalProperties:
+      type: boolean

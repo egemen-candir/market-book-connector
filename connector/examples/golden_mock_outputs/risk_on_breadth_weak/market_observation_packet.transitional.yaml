@@ -1,0 +1,53 @@
+# Golden observation packet used by the mock builder for the full-pipeline example.
+# The body is the open packet the retriever embeds (summary + observations[]).
+packet_version: '0.1'
+observation_id: obs_57e0de2b5e12
+created_at_utc: '2026-06-25T00:00:00Z'
+market_book_version: stage6_accepted
+input_reference:
+  raw_input_hash: sha256:57e0de2b5e1216f8e3fe8d5885ebb5d64d6c64b5981cb99f73ba466cd615f2fa
+  raw_input_path: connector/runs/<run_id>/raw_input.md
+  source_type: dashboard_text
+as_of:
+  date: '2026-06-25'
+  timezone: America/New_York
+  observation_horizon: medium_frequency
+asset_scope:
+  - us_large_cap_equity
+  - us_small_cap_equity
+summary: >-
+  Mega-cap equities are still grinding higher while market breadth weakens.
+  Volatility is picking up, cross-asset correlations are rising, and small-cap
+  liquidity appears to be deteriorating. No direct transaction-cost or
+  credit-spread measurements are available.
+observations:
+  - statement: >-
+      Large-cap indices are near their highs and equity prices are still grinding upward.
+    dimension: equity_trend
+    direction: rising
+    magnitude: moderate
+  - statement: >-
+      Market breadth is deteriorating as advancing participation declines.
+    dimension: market_breadth
+    direction: weakening
+    magnitude: moderate
+  - statement: >-
+      Realized and implied volatility are ticking up.
+    dimension: volatility
+    direction: rising
+    magnitude: weak
+  - statement: >-
+      Cross-asset correlations are increasing.
+    dimension: cross_asset_correlation
+    direction: rising
+    magnitude: moderate
+  - statement: >-
+      Small-cap liquidity feels poor and is not directly measured.
+    dimension: liquidity
+    direction: deteriorating
+    magnitude: weak
+prohibited_content_flags:
+  contains_trade_recommendation: false
+  contains_position_sizing: false
+  contains_policy_conclusion: false
+  contains_market_book_state_id: false

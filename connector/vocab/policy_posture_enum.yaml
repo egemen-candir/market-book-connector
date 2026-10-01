@@ -1,0 +1,8 @@
+values:
+  - defensive_monitoring
+  - risk_off_monitoring
+  - neutral_observation
+  - regime_dependent
+  - caution_flagged
+  - no_actionable_posture
+  - unsupported

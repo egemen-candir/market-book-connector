@@ -1,0 +1,98 @@
+{
+  "arrays": [
+    "vectors",
+    "chunk_id",
+    "state_id",
+    "entry_id",
+    "source_record_id",
+    "kind",
+    "chunk_text"
+  ],
+  "build_utc": "2026-07-06T14:08:07Z",
+  "catalog_path": "connector/catalog/market_book_catalog.stage6_enriched.json",
+  "catalog_sha256": "68b4c77393cf426034197ee364fe30e31f6e5586379a43537f530b802cf05f1a",
+  "chunk_count": 316,
+  "chunk_params": {
+    "max_tokens": 256,
+    "measurement": "len(tokenizer.encode(text, add_special_tokens=True))",
+    "target_tokens": 200
+  },
+  "content_sha256": "da7985c4950de42b01730df7967d1b0faebc09e432567ed95dcd5e68e5a78044",
+  "determinism_sha256": "02ee4558977d04b6940b4456128dbae4f4cb713836ca5325c86c8a26f964a36e",
+  "dim": 384,
+  "excluded_methodological_state_ids": [
+    "state_hamilton_rs_filter_equations_001",
+    "state_hamilton_rs_garch_path_dependence_003",
+    "state_hamilton_arch_ols_overreject_001",
+    "state_hasbrouck_gibbs_estimator_001",
+    "state_hasbrouck_small_sample_bias_005"
+  ],
+  "glosses_path": "connector/configs/glosses.v1.yaml",
+  "glosses_sha256": "7307f7848ead344f8d48479115dc645932043e6804dc9e8045876d07360349ec",
+  "glosses_version": "v1",
+  "index_version": "1",
+  "kind_counts": {
+    "claim": 54,
+    "failure": 56,
+    "gloss": 3,
+    "policy": 102,
+    "signature": 68,
+    "state_summary": 33
+  },
+  "methodological_state_count_in_index": 0,
+  "model_files": [
+    {
+      "name": "model.safetensors",
+      "sha256": "45bfa60070649aae2244fbc9d508537779b93b6f353c17b0f95ceccb1c5116c1"
+    },
+    {
+      "name": "tokenizer.json",
+      "sha256": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66"
+    },
+    {
+      "name": "config.json",
+      "sha256": "5dfb0363cd0243be179c03bcaafd1542d0fbb95e8cbcf575fff3e229342adc2f"
+    }
+  ],
+  "model_name": "intfloat/e5-small-v2",
+  "model_sha": "b706a4374142c9f3a14b7f207796de7cba768138c47faf0f5f2dfc9a27a651a1",
+  "model_sha_recipe": "sha256(sorted-concat of (filename+sha256hex) pairs over {model.safetensors, tokenizer.json, config.json})",
+  "numpy_version": "2.2.6",
+  "observable_state_count": 26,
+  "observable_state_ids": [
+    "state_amihud_crosssection_premium_002",
+    "state_amihud_illiq_formula_001",
+    "state_amihud_illiq_persistence_004",
+    "state_amihud_size_interaction_005",
+    "state_amihud_timeseries_premium_003",
+    "state_ang_2011_exceedance_asymmetry_003",
+    "state_ang_2011_fat_tails_mixture_001",
+    "state_ang_bekaert_bear_correlation_002",
+    "state_ang_bekaert_regime_params_001",
+    "state_billio_financial_sector_comovement_001",
+    "state_billio_granger_systemic_buildup_002",
+    "state_billio_hedge_fund_illiquidity_003",
+    "state_cho_engle_market_conditions_004",
+    "state_cho_engle_moneyness_003",
+    "state_cho_engle_underlying_spread_002",
+    "state_cho_engle_volume_insignificant_001",
+    "state_forbes_heteroscedasticity_bias_001",
+    "state_gatev_pairs_mean_reversion_001",
+    "state_hamilton_arch_volatility_clustering_004",
+    "state_hasbrouck_january_effect_004",
+    "state_hasbrouck_return_premium_003",
+    "state_hasbrouck_taq_correlation_002",
+    "state_hurst_tsmom_trend_following_001",
+    "state_lo_mackinlay_short_horizon_predictability_001",
+    "state_nguyen_three_state_hmm_001",
+    "state_poterba_summers_long_horizon_mean_reversion_001"
+  ],
+  "passage_prefix": "passage: ",
+  "query_prefix": "query: ",
+  "retrieval_targets_path": "connector/configs/retrieval_targets.v1.yaml",
+  "retrieval_targets_sha256": "3d10b72cc91329f91670054e26c0465448f280d4987f504474be62c381ff63f4",
+  "sentence_transformers_version": "5.6.0",
+  "tokenizer_max_len": 512,
+  "torch_version": "2.12.1+cpu",
+  "transformers_version": "5.12.1"
+}

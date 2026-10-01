@@ -1,0 +1,51 @@
+ordinal,case_id,bucket,outcome,matched_state_ids,correctness_score,fidelity_score,quality_score,final_score,applied_cap,cap_ceiling,unsupported_selected_states,partly_supported_selected_states,glm_5_3_review_coverage
+1,blob_01_china_deval_oil_crash,stress,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+2,blob_02_brexit_shock,stress,matched,state_billio_financial_sector_comovement_001;state_ang_bekaert_regime_params_001;state_ang_bekaert_bear_correlation_002,2,2,4,2.30,both,2.99,2,1,mandatory
+3,blob_03_us_election_whipsaw,stress,matched,state_ang_bekaert_regime_params_001;state_nguyen_three_state_hmm_001;state_hamilton_arch_volatility_clustering_004,2,2,4,2.30,both,2.99,2,1,both
+4,blob_04_volmageddon,stress,matched,state_hamilton_arch_volatility_clustering_004;state_nguyen_three_state_hmm_001,2,2,4,2.30,both,2.99,1,1,both
+5,blob_05_q4_2018_selloff,stress,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+6,blob_06_curve_inversion_scare,stress,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+7,blob_07_repo_spike,stress,no match,,5,5,5,5.00,none,none,0,0,control
+8,blob_08_covid_crash,stress,matched,state_nguyen_three_state_hmm_001;state_hurst_tsmom_trend_following_001,2,2,4,2.30,both,2.99,2,0,mandatory
+9,blob_09_negative_oil_equities,stress,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+10,blob_10_real_yield_tantrum,stress,matched,state_hurst_tsmom_trend_following_001,2,2,4,2.30,both,2.99,1,0,mandatory
+11,blob_11_evergrande_fear,stress,matched,state_nguyen_three_state_hmm_001,2,2,4,2.30,both,2.99,1,0,mandatory
+12,blob_12_growth_drawdown,stress,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+13,blob_13_cpi_shock,stress,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+14,blob_14_gilt_ldi_crisis,stress,matched,state_nguyen_three_state_hmm_001,2,2,4,2.30,both,2.99,1,0,mandatory
+15,blob_15_svb_bank_runs,stress,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+16,blob_16_tenyear_five_percent,stress,matched,state_hurst_tsmom_trend_following_001,2,2,4,2.30,both,2.99,1,0,both
+17,blob_17_yen_carry_unwind,stress,matched,state_ang_bekaert_bear_correlation_002,2,3,4,2.70,correctness,2.99,0,1,mandatory
+18,blob_18_tariff_shock,stress,matched,state_nguyen_three_state_hmm_001,2,2,4,2.30,both,2.99,1,0,mandatory
+19,blob_19_low_vol_grind,calm,matched,state_nguyen_three_state_hmm_001;state_hamilton_arch_volatility_clustering_004;state_hurst_tsmom_trend_following_001,2,2,4,2.30,both,2.99,2,1,mandatory
+20,blob_20_january_melt_up,calm,matched,state_hurst_tsmom_trend_following_001;state_hamilton_arch_volatility_clustering_004;state_nguyen_three_state_hmm_001;state_ang_bekaert_regime_params_001,2,2,4,2.30,both,2.99,3,1,mandatory
+21,blob_21_powell_pivot_recovery,calm,matched,state_hurst_tsmom_trend_following_001;state_ang_bekaert_regime_params_001;state_hamilton_arch_volatility_clustering_004;state_nguyen_three_state_hmm_001,2,2,4,2.30,both,2.99,3,1,both
+22,blob_22_summer_tech_rally,calm,matched,state_cho_engle_market_conditions_004,2,3,4,2.70,correctness,2.99,0,1,both
+23,blob_23_spac_froth,calm,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+24,blob_24_soft_landing_rally,calm,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+25,blob_25_dovish_pivot_rally,calm,matched,state_hurst_tsmom_trend_following_001;state_nguyen_three_state_hmm_001,2,2,4,2.30,both,2.99,2,0,both
+26,blob_26_ai_megacap_concentration,calm,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+27,blob_27_record_high_low_vol,calm,matched,state_nguyen_three_state_hmm_001;state_ang_bekaert_regime_params_001,2,2,4,2.30,both,2.99,2,0,mandatory
+28,blob_28_post_brexit_lull,calm,matched,state_hamilton_arch_volatility_clustering_004,2,3,4,2.70,correctness,2.99,0,1,mandatory
+29,blob_29_vaccine_value_rotation,rotation,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+30,blob_30_meme_squeeze,rotation,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+31,blob_31_reopening_rotation_churn,rotation,matched,state_hurst_tsmom_trend_following_001,2,3,4,2.70,correctness,2.99,0,1,mandatory
+32,blob_32_tech_pullback_momentum,rotation,no match,,5,5,5,5.00,none,none,0,0,control
+33,blob_33_energy_outperformance,rotation,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+34,blob_34_zero_dte_intraday,rotation,matched,state_hamilton_arch_volatility_clustering_004,2,3,4,2.70,correctness,2.99,0,1,mandatory
+35,blob_35_small_cap_rotation,rotation,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+36,blob_36_bond_proxy_rotation,rotation,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+37,blob_37_dollar_weakness_international,rotation,no match,,5,5,4,4.85,none,none,0,0,mechanical only
+38,blob_38_defensive_rotation,rotation,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+39,blob_39_bitcoin_mania,boundary,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+40,blob_40_crypto_winter,boundary,no match,,5,5,5,5.00,none,none,0,0,control
+41,blob_41_ftx_collapse,boundary,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+42,blob_42_lumber_squeeze,boundary,matched,state_hurst_tsmom_trend_following_001,2,2,4,2.30,both,2.99,1,0,mandatory
+43,blob_43_eu_natgas_crisis,boundary,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+44,blob_44_nickel_squeeze,boundary,matched,state_nguyen_three_state_hmm_001,2,2,4,2.30,both,2.99,1,0,mandatory
+45,blob_45_argentina_peso_crisis,boundary,matched,state_ang_bekaert_regime_params_001,2,2,4,2.30,both,2.99,1,0,both
+46,blob_46_turkish_lira_crisis,boundary,matched,state_nguyen_three_state_hmm_001,2,2,4,2.30,both,2.99,1,0,mandatory
+47,blob_47_container_freight_boom,boundary,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+48,blob_48_panama_canal_shipping,boundary,no match,,5,5,5,5.00,none,none,0,0,mechanical only
+49,blob_49_cocoa_explosion,boundary,matched,state_nguyen_three_state_hmm_001;state_hurst_tsmom_trend_following_001,2,2,4,2.30,both,2.99,2,0,mandatory
+50,blob_50_btp_spread_blowout,boundary,no match,,5,5,5,5.00,none,none,0,0,mechanical only

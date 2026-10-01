@@ -1,0 +1,13 @@
+/.venv/
+/.hf_cache/
+/.cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+/connector/runs/
+/dashboard/Outputs/
+/.env
+/.env.*
+!/.env.example
+/connector/configs/*.local.yaml

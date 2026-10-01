@@ -1,0 +1,14 @@
+values:
+  - rising
+  - falling
+  - flat
+  - stable
+  - weakening
+  - strengthening
+  - deteriorating
+  - improving
+  - widening
+  - narrowing
+  - increasing
+  - decreasing
+  - uncertain

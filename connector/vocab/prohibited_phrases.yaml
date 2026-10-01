@@ -1,0 +1,78 @@
+# Prohibited-action vocabulary for connector free-text fields.
+#
+# The connector forbids DIRECT TRADING INSTRUCTIONS in narrative_summary,
+# evidence notes, unsupported statements, evidence_caveats, and the
+# overall_interpretation summary. Single-word global bans are deliberately
+# NOT used because they false-positive on legitimate market commentary.
+#
+# Matching is split into three lists:
+#
+#   allowed_phrases - benign market terms; a phrases/patterns match is
+#                     suppressed only when it lies entirely within one of
+#                     these phrases' spans (containment), so "short horizon",
+#                     "order book", "sell-side", etc. do not trip a
+#                     verb+instrument pattern such as "short TSLA", while
+#                     "go short Horizon Therapeutics" still fires.
+#   phrases         - multi-word / hyphenated trading-instruction phrases,
+#                     matched as substrings (case-insensitive). Single-word
+#                     entries here match on word boundaries.
+#   patterns        - regex patterns (each with a readable name) for
+#                     verb+instrument constructions such as "buy SPY".
+#
+# Containment cannot separate a directive from commentary when the allowed
+# phrase IS the whole match: directives of the form `short <Instrument>`
+# where the instrument's name completes a space-separated `short <noun>`
+# phrase in `allowed_phrases` are not detected: the phrase and the directive
+# are lexically identical.
+
+allowed_phrases:
+  - short horizon
+  - short-horizon
+  - short-term
+  - short term
+  - short duration
+  - short covering
+  - short squeeze
+  - short interest
+  - long horizon
+  - long-horizon
+  - long-term
+  - sell-side
+  - buy-side
+  - order book
+  - order-book
+  - execution cost
+  - execution quality
+  - execution shortfall
+  - transaction cost
+  - liquidity provision
+  - leverage ratio
+  - financial leverage
+  - operating leverage
+
+phrases:
+  - go long
+  - go short
+  - go flat
+  - enter a position
+  - exit a position
+  - increase position
+  - reduce position
+  - position size
+  - size the position
+  - place an order
+  - execute a trade
+  - stop loss
+  - take profit
+  - portfolio allocation
+  - trade recommendation
+  - rebalance into
+  - leverage
+
+patterns:
+  - name: "buy/sell/short <instrument>"
+    regex: '\b(?:buy|sell|short)\s+[A-Za-z][\w.\-]*'
+  - name: "allocate <percent>"
+    regex: '\ballocate\s+\d+\s*%'
+  - name: "allocate <instrument>"
+    regex: '\ballocate\s+[A-Za-z][\w.\-]*'

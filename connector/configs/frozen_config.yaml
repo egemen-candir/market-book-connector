@@ -1,0 +1,26 @@
+# frozen_config.yaml — the config freeze of record (pointer semantics).
+#
+# This file IS the freeze. Production retrieval resolves its index via resolve_frozen_index_dir(),
+# which reads this pointer and FAILS LOUD if the resolved index's content_sha256 != the anchor below.
+# Changing the frozen config = editing this file + repinning; nothing is overwritten in place.
+#
+# The freeze is a selection (a load-bearing pointer to a built index), not a mutation.
+
+version: 1
+frozen_config_of_record:
+  # LOAD-BEARING (resolver enforces): index_dir, content_sha256, k, alpha, min_floor, gate
+  # relative to the connector/ root (resolve_frozen_index_dir joins against connector dir)
+  index_dir: catalog/glossed/e5
+  model: intfloat/e5-small-v2
+  corpus: glossed_v1
+  content_sha256: da7985c4950de42b01730df7967d1b0faebc09e432567ed95dcd5e68e5a78044
+  k: 15
+  alpha: 0
+  min_floor: 0
+  gate: disabled
+  query_mode: statements       # descriptive (implemented constant; 'statements' mode includes the summary query); not enforced by resolver
+  rounding_dp: 6               # descriptive (implemented constant); not enforced by resolver
+  tie_break: [-score, entry_id]  # descriptive (implemented constant); not enforced by resolver
+  # standing CI bounds are AUTHORITATIVE in ci_regression_bounds.yaml — cite, do not mirror (avoids drift)
+  ci_bounds_source: ci_regression_bounds.yaml
+  ruling: "Freeze of record 2026-07-06; pointer semantics."

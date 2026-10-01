@@ -1,0 +1,142 @@
+# Backend profiles for the Market Book downstream connector.
+# Each profile describes how to invoke a headless CLI for a given role.
+# No API tokens, endpoints, or home paths appear here. A profile MAY pin a model
+# (e.g. `-m gpt-5.5`) so that runs are reproducible and a packet's provenance lives
+# in config rather than in the operator's ambient shell state.
+#
+# TWO OUTPUT CONTRACTS, BOTH SUPPORTED BY DESIGN (see run_agent_backend.py):
+#   * `output_from: stdout` -- the CLI is a pure text filter; the pipeline captures
+#     stdout and writes expected_output_file itself. (claude_code_*)
+#   * no `output_from`      -- the CLI writes expected_output_file itself, e.g. via
+#     codex's `-o/--output-last-message` or opencode's own file output.
+# Omitting `output_from` is therefore CORRECT for file-writing CLIs, not an oversight.
+#
+# Verify any profile with a short live run before relying on it.
+
+profiles_version: "0.1"
+
+defaults:
+  timeout_seconds: 120
+  cwd: "{run_dir}"
+  # Never set false: it writes every environment variable value into the run folder.
+  redact_env: true
+
+profiles:
+  # Prompt delivery: prefer `stdin` (or `prompt_file_path`) over `instruction_arg`.
+  # A command-line argument is visible to other users of the machine (e.g. in `ps`)
+  # and is length-limited by the OS (about 32,000 characters on Windows). The builder
+  # prompt contains the user's full commentary.
+  mock:
+    backend_type: mock
+    prompt_delivery: copy_golden
+    timeout_seconds: 30
+    expected_output_file: "{run_dir}/{role}/{expected_filename}"
+
+  claude_code_opus:
+    backend_type: cli
+    output_from: stdout
+    command:
+      - claude
+      - "--model"
+      - "opus"
+      - "--print"
+    prompt_delivery: stdin
+    cwd: "{run_dir}"
+    timeout_seconds: 1800
+    expected_output_file: "{run_dir}/{role}/{expected_filename}"
+
+  claude_code_sonnet:
+    backend_type: cli
+    output_from: stdout
+    command:
+      - claude
+      - "--model"
+      - "sonnet"
+      - "--print"
+    prompt_delivery: stdin
+    cwd: "{run_dir}"
+    timeout_seconds: 1800
+    expected_output_file: "{run_dir}/{role}/{expected_filename}"
+
+  # Live-probed against Codex v0.140.0 (2026-07-09). Prior version was broken three ways:
+  #   `--quiet` is not a valid flag (bare `codex` forwards to the INTERACTIVE cli -> hangs);
+  #   stdout carries the agent transcript, not the completion (so `output_from: stdout` was wrong);
+  #   instruction_arg exposes a long prompt to shell-hostile chars and ARG_MAX.
+  # No `output_from`: codex writes {expected_output_file} itself via `-o`.
+  # `-` = prompt via stdin.
+  # `-s read-only`: S1 emits text and never writes; yields `approval: never` (no prompt, no hang).
+  # `-c model_reasoning_effort=high` is a REASONING TIER on the same model, not a model choice.
+  # Model: gpt-5.6-sol at `high` reasoning effort. Heavier tiers (xhigh and above) are avoided:
+  # they suit one-shot work better than this bounded pipeline. Change `-m` to your own model.
+  codex_exec:
+    backend_type: cli
+    command:
+      - codex
+      - exec
+      - "--skip-git-repo-check"
+      - "-C"
+      - "{run_dir}"
+      - "-m"
+      - "gpt-5.6-sol"
+      - "-c"
+      - "model_reasoning_effort=high"
+      - "-s"
+      - "read-only"
+      - "--ephemeral"
+      - "-o"
+      - "{expected_output_file}"
+      - "-"
+    prompt_delivery: stdin
+    cwd: "{run_dir}"
+    timeout_seconds: 1800
+    expected_output_file: "{run_dir}/{role}/{expected_filename}"
+
+  # Alternative Codex profile: a different model at `xhigh` reasoning effort (slower and
+  # heavier than codex_exec; see the note above).
+  codex_exec_luna:
+    backend_type: cli
+    command:
+      - codex
+      - exec
+      - "--skip-git-repo-check"
+      - "-C"
+      - "{run_dir}"
+      - "-m"
+      - "gpt-5.6-luna"
+      - "-c"
+      - "model_reasoning_effort=xhigh"
+      - "-s"
+      - "read-only"
+      - "--ephemeral"
+      - "-o"
+      - "{expected_output_file}"
+      - "-"
+    prompt_delivery: stdin
+    cwd: "{run_dir}"
+    timeout_seconds: 1800
+    expected_output_file: "{run_dir}/{role}/{expected_filename}"
+
+  opencode_run:
+    backend_type: cli
+    command:
+      - opencode
+      - "run"
+      - "--prompt-file"
+      - "{instruction}"
+    prompt_delivery: prompt_file_path
+    cwd: "{run_dir}"
+    timeout_seconds: 1800
+    expected_output_file: "{run_dir}/{role}/{expected_filename}"
+
+  generic_shell:
+    backend_type: cli
+    output_from: stdout
+    command:
+      - "/usr/bin/env"
+      - "sh"
+      - "-c"
+      - "{user_command}"
+    prompt_delivery: instruction_arg
+    cwd: "{run_dir}"
+    timeout_seconds: 1800
+    expected_output_file: "{run_dir}/{role}/{expected_filename}"

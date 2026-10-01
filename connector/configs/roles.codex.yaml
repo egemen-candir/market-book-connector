@@ -1,0 +1,42 @@
+# Example live-run role config: the observation packet builder on the codex_exec profile and
+# the Market Book evaluator on the claude_code_opus profile. Edit the profile names to match
+# your own command-line tools. The offline default is roles.example.yaml (mock).
+
+# Role definitions for the Market Book downstream connector.
+# Each role maps to a prompt template, schema, and output filename.
+# Golden output directories are used by the mock backend.
+
+roles:
+  observation_packet_builder:
+    prompt_file: connector/prompts/observation_packet_builder.md
+    schema_ref: connector/schemas/market_observation_packet.schema.yaml
+    output_filename: market_observation_packet.yaml
+    backend_profile: codex_exec
+    receives:
+      - raw_input
+      - packet_schema
+      - prohibitions
+    golden_output_dir: connector/examples/golden_mock_outputs/risk_on_breadth_weak
+    golden_output_filename: market_observation_packet.transitional.yaml
+
+  market_book_evaluator:
+    prompt_file: connector/prompts/market_book_evaluator.md
+    schema_ref: connector/schemas/market_book_evaluation.schema.yaml
+    output_filename: market_book_evaluation.yaml
+    backend_profile: claude_code_opus
+    receives:
+      - observation_packet
+      - candidate_entries
+      - evaluation_schema
+      - prohibitions
+    golden_output_dir: connector/examples/golden_mock_outputs/risk_on_breadth_weak
+    golden_output_filename: market_book_evaluation.yaml
+
+  dashboard_explainer:
+    prompt_file: connector/prompts/dashboard_explainer.md
+    schema_ref: null
+    output_filename: dashboard_explainer.md
+    receives:
+      - validated_artifacts
+    golden_output_dir: null
+    golden_output_filename: null
