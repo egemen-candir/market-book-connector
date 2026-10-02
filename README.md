@@ -15,6 +15,11 @@ whether inference uses a cloud or a local model.
 instruction.** No match and pipeline failure are first-class results: an
 unsupported or failed run is never dressed up as a finding.
 
+**Live demo:** [marketbook.teodinlabs.com](https://marketbook.teodinlabs.com)
+shows the dashboard with the 50 blind-batch runs and a golden example, each with
+its original commentary. It is a static copy: you can explore the recorded
+results, but evaluating your own commentary needs the local install below.
+
 ## Why not just paste the research into a prompt?
 
 That is the first question a skeptical reader should ask, so here is a direct answer.
@@ -323,6 +328,7 @@ procedural qualifications apply to these results.
 
 See the [blind-batch study](study/STUDY.md) for the commentaries, rubric,
 per-case results, GLM review, repeatability probe, and recorded limitations.
+Every run can also be browsed in the [live demo](https://marketbook.teodinlabs.com).
 
 ## License
 
